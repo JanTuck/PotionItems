@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
 plugins {
     kotlin("jvm") version "1.3.72"
     id("kr.entree.spigradle") version "1.2.4"
@@ -26,6 +27,12 @@ spigot {
     apiVersion = "1.13"
 }
 
+val autoRelocate by tasks.register<ConfigureShadowRelocation>("configureShadowRelocation", ConfigureShadowRelocation::class) {
+    target = tasks.getByName("shadowJar") as ShadowJar?
+    val packageName = "${project.group}.${project.name.toLowerCase()}"
+    prefix = "$packageName.shaded"
+}
+
 tasks {
     compileTestKotlin {
         kotlinOptions.jvmTarget = "1.8"
@@ -35,11 +42,7 @@ tasks {
     }
     withType<ShadowJar> {
         archiveClassifier.set("")
-        val packageName = "${project.group}.${project.name.toLowerCase()}"
-        relocate("co.aikar.commands", "$packageName.shaded.acf")
-        relocate("co.aikar.locales", "$packageName.shaded.locales")
-        relocate( "kotlin" , "$packageName.shaded.kotlin")
-        relocate( "com.okkero.skedule" , "$packageName.shaded.skedule")
+        dependsOn(autoRelocate)
         minimize()
     }
 }
