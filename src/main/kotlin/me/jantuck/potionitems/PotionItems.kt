@@ -26,22 +26,10 @@ class PotionItems : JavaPlugin(), Listener {
     }
 
     @EventHandler
-
     fun AsyncPlayerChatEvent.chat(){
         this@PotionItems.schedule {
             if (this@chat.message == "h"){
                 val itemStack = ItemStack(Material.DIAMOND)
-                pdcHandler.replaceEmbeddedInformation(
-                    itemStack,
-                    listOf(PotionContainer(
-                        PotionEffectType.SPEED,
-                        2,
-                        PotionLength.FINITE,
-                        900000L,
-                        -1L
-                    )
-                    )
-                )
                 this@chat.player.inventory.addItem(
                     itemStack
                 )

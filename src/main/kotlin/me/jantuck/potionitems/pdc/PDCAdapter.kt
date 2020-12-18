@@ -2,6 +2,7 @@ package me.jantuck.potionitems.pdc
 
 import me.jantuck.potionitems.types.PotionContainer
 import me.jantuck.potionitems.types.PotionLength
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.potion.PotionEffectType
@@ -31,6 +32,9 @@ class PDCAdapter : PersistentDataType<ByteArray, List<PotionContainer>> {
             dataOutputStream.write(it.potionLengthType.getID())
             dataOutputStream.writeLong(it.potionLength)
             dataOutputStream.writeLong(it.activatedAt)
+            dataOutputStream.writeUTF(
+                it.equipmentSlot.name
+            )
         }
 
         return array.toByteArray()
@@ -45,6 +49,7 @@ class PDCAdapter : PersistentDataType<ByteArray, List<PotionContainer>> {
             val id = dataInputStream.read()
             val time = dataInputStream.readLong()
             val activatedAt = dataInputStream.readLong()
+            val equipmentSlot = dataInputStream.readUTF()
 
             output.add(
                 PotionContainer(
@@ -54,7 +59,8 @@ class PDCAdapter : PersistentDataType<ByteArray, List<PotionContainer>> {
                     amplifier,
                     if (id == 0) PotionLength.INFINITE else PotionLength.FINITE,
                     time,
-                    activatedAt
+                    activatedAt,
+                    EquipmentSlot.valueOf(equipmentSlot)
                 )
             )
         }
